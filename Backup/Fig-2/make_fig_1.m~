@@ -1,0 +1,121 @@
+clear
+close all
+
+addpath('../');
+
+bands_SIE = 2:3;
+bands_MIZ = 2;
+
+plot_preamble;
+
+
+
+clearvars -except OBS CMIP CLIVAR bands* smooth* obuse
+
+mos_SIE = 9;
+mos_MIZ = 10; 
+
+horvat_colors;
+
+[~,~,indices] = unique(CLIVAR.namevec);
+
+%%
+
+Ax{1} = subplot(121);
+
+
+addpath('../boundedlin/');
+
+cmipplot = squeeze(mean(CMIP.SIE_ensmean(:,mos_SIE,:),2));
+
+clear hl
+
+% hl(1) = boundedline(CMIP.plotyrs,squeeze(nanmean(cmipplot,1)),squeeze(nanstd(cmipplot,[],1)),'cmap',clabs(7,:));
+
+for i = 1:5
+    
+    clivarplot = squeeze(mean(CLIVAR.SIE(indices==i,mos_SIE,:),2));
+    
+    [hl(i),~] = boundedline(CMIP.plotyrs,squeeze(nanmean(clivarplot,1)),squeeze(nanstd(clivarplot,[],1)),'cmap',clabs(i,:));
+    
+end
+
+
+hold on
+symb = {'-k','--k','-xk'};
+
+obuse = [1 2 3]
+
+for i = 1:length(obuse)
+    hl(end+1) = plot(OBS.plotyrs,squeeze(mean(OBS.SIE(obuse(i),mos_SIE,:),2)),symb{i},'linewidth',2);
+end
+
+hl(end+1) = boundedline(OBS.plotyrs,squeeze(nanmean(obsplot,1)),squeeze(nanstd(obsplot,[],1)),'cmap',clabs(i,:));
+
+
+for i = 1:length(hl)
+    uistack(hl(i),'top');
+    set(hl(i),'linewidth',1);
+end
+
+grid on; box on;
+
+xlim([1978 2018])
+
+ylim([0 max(get(gca,'ylim'))]);
+
+title('Sea Ice Extent','interpreter','latex'); 
+
+Ax{2} = subplot(122);
+
+addpath('../boundedlin/');
+
+cmipplot = squeeze(mean(CMIP.MIZ_ensmean(:,mos_MIZ,:),2));
+
+clear hl
+
+% hl(1) = boundedline(CMIP.plotyrs,squeeze(nanmean(cmipplot,1)),squeeze(nanstd(cmipplot,[],1)),'cmap',clabs(7,:));
+
+for i = 1:5
+    
+    clivarplot = squeeze(mean(CLIVAR.MIZ(indices==i,mos_MIZ,:),2));
+    
+    [hl(i),~] = boundedline(CMIP.plotyrs,squeeze(nanmean(clivarplot,1)),squeeze(nanstd(clivarplot,[],1)),'cmap',clabs(i,:));
+    
+end
+
+obsplot = squeeze(mean(OBS.MIZ(:,mos_MIZ,:),2)); 
+
+hl(end+1) = boundedline(OBS.plotyrs,squeeze(nanmean(obsplot,1)),squeeze(nanstd(obsplot,[],1)),'cmap',clabs(i,:));
+    
+
+for i = 1:length(hl)
+    uistack(hl(i),'top');
+    set(hl(i),'linewidth',1);
+end
+
+title('MIZ Extent','interpreter','latex'); 
+q = strrep(CLIVAR.names,'_','-');
+legend(hl,{q{:},'NASATeam','Bootstrap','OSISAF'},'location',[.85 .3 .05 .4])
+
+grid on; box on;
+
+xlim([1978 2018])
+
+ylim([0 max(get(gca,'ylim'))]);
+
+delete(findall(gcf,'Tag','legtag'))
+
+for i = 1:length(Ax)
+    set(Ax{i},'fontname','helvetica','fontsize',10,'xminortick','on','yminortick','on')
+    posy = get(Ax{i},'position');
+    set(Ax{i},'position',get(Ax{i},'position')+[-.05*i 0 -.05 0]); 
+    
+end
+
+pos = [8 3.5];
+set(gcf,'windowstyle','normal','position',[0 0 pos],'paperposition',[0 0 pos],'papersize',pos,'units','inches','paperunits','inches');
+set(gcf,'windowstyle','normal','position',[0 0 pos],'paperposition',[0 0 pos],'papersize',pos,'units','inches','paperunits','inches');
+
+saveas(gcf,'Fig-1.pdf')
+
