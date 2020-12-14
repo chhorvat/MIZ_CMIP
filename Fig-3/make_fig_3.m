@@ -132,10 +132,16 @@ end
 
 for i = 1:6
     
-    Ax{i} = subplot(2,6,i);
+    if i < 6
+        Ax{6-i} = subplot(2,3,6-i)
+    else
+        Ax{6} = subplot(2,3,6); 
+    end
     
     tcols = repmat([0.2148    0.4922    0.7188],[12 1]);
     tcols(tval(i,:) == 1,:) = repmat([0.8906    0.1016    0.1094],[sum(tval(i,:)) 1]);
+    
+    tsave(i,:) = tcols(9,:); 
     
     boxplot(sens_SIE(indices==i,:),'boxstyle','filled','widths',1,'whisker',whiskval,'symbol','','colors',tcols);
     hold on
@@ -155,10 +161,12 @@ for i = 1:6
     
     set(gca,'xtick',[1:12],'xticklabel',{});
     
-    if i > 1
-        set(gca,'yticklabel',{});
-    else
+%     if 6-i > 1
+%         set(gca,'yticklabel',{});
+    if (6-i == 1) || (6-i ==4)
         ylabel('$\rho$SIA','interpreter','latex');
+    else
+        set(gca,'yticklabel',{}); 
     end
     
 end
@@ -227,13 +235,19 @@ for i = 1:6
 end
 
 
+%%
 
-
+close
 
 for i = 1:6
     %%
-    Ax{6+i} = subplot(2,6,6+i);
+%    Ax{6+i} = subplot(2,6,6+i);
     
+    if i < 6
+        Ax{i} = subplot(2,3,6-i);
+    else
+        Ax{6} = subplot(2,3,6); 
+    end
     
     tcols = repmat([0.2148    0.4922    0.7188],[12 1]);
     tcols(tval(i,:) == 1,:) = repmat([0.8906    0.1016    0.1094],[sum(tval(i,:)) 1]);
@@ -242,25 +256,35 @@ for i = 1:6
     hold on
     %   plot(mean(sens_SIE_obs),'k');
     
-    %   title(gnam{i},'interpreter','latex');
-    plot(obmean,'k');
-    plot(obmean + obvar,'--k');
-    plot(obmean - obvar,'--k');
-    
+    title(gnam{i},'interpreter','latex','fontsize',8);
     grid on;
     box on;
     
     %   plot(sens_SIE_obs','k');
     
+    plot(obmean,'k');
+    plot(obmean + obvar,'--k');
+    plot(obmean - obvar,'--k');
+    
+    set(gca,'xtick',[1:12],'xticklabel',{});
+    
+%     if 6-i > 1
+%         set(gca,'yticklabel',{});
+    if (6-i == 1) || (6-i ==4)
+        ylabel('$\rho$SIA','interpreter','latex');
+    else
+        set(gca,'yticklabel',{}); 
+    end
+
+       
     
     set(gca,'xtick',[1:12],'xticklabel',{'','','M','','','J','','','S','','','D'});
-    
-    if i > 1
-        set(gca,'yticklabel',{});
-    else
-        ylabel('$\rho$MIZF','interpreter','latex');
-    end
-    
+
+%     if i > 1
+%         set(gca,'yticklabel',{});
+%     else
+%     end
+%     
     ylim([-50 200]);
     
 end
@@ -270,15 +294,16 @@ end
 delete(findall(gcf,'Tag','legtag'))
 
 for i = 1:length(Ax)
-    set(Ax{i},'fontname','helvetica','fontsize',8,'xminortick','off','yminortick','on')
+    set(Ax{i},'fontname','helvetica','fontsize',12,'xminortick','off','yminortick','on')
     posy = get(Ax{i},'position');
 end
 
-pos = [6.5 3.5];
+pos = [8 5.5];
 set(gcf,'windowstyle','normal','position',[0 0 pos],'paperposition',[0 0 pos],'papersize',pos,'units','inches','paperunits','inches');
 set(gcf,'windowstyle','normal','position',[0 0 pos],'paperposition',[0 0 pos],'papersize',pos,'units','inches','paperunits','inches');
 
 
+%%
 delx = .01;
 dely = .05;
 
@@ -299,6 +324,8 @@ end
 
 drawnow
 
+
+%%
 saveas(gcf,'/Users/chorvat/Dropbox (Brown)/Apps/Overleaf/Marginal-Ice-Zone-CMIP/Fig-3/Fig-3.pdf')
 saveas(gcf,'Sensitivities-by-model.pdf');
 

@@ -137,11 +137,18 @@ boxplot(modelout,gvec,'orientation','horizontal','whisker',whiskval,'symbol','',
 grid on; box on;
 
 xlabel('$\Delta$MIZF (\%/yr)','interpreter','latex');
-set(gca,'yticklabel',{});
+% set(gca,'yticklabel',{});
 set(gca,'TickLabelInterpreter','latex');
-set(gca,'yaxislocation','left')
+set(gca,'yaxislocation','right')
+
+
 
 %%
+q = strrep(CLIVAR.names,'_','-');
+L = legend(scath,{q{:}},'location',[.18 .445 .64 .05],'fontsize',8,'orientation','horizontal');
+L.ItemTokenSize = [8 8];
+
+
 delete(findall(gcf,'Tag','legtag'))
 
 for i = 1:length(Ax)
@@ -150,9 +157,10 @@ for i = 1:length(Ax)
     
 end
 
-pos = [6.5 3];
+pos = [6.5 3.25];
 set(gcf,'windowstyle','normal','position',[0 0 pos],'paperposition',[0 0 pos],'papersize',pos,'units','inches','paperunits','inches');
 set(gcf,'windowstyle','normal','position',[0 0 pos],'paperposition',[0 0 pos],'papersize',pos,'units','inches','paperunits','inches');
+
 
 drawnow
 

@@ -39,6 +39,8 @@ Ax{1} = subplot(321);
 addpath('../boundedlin/');
 
 cmipplot = squeeze(mean(CMIP.SIA_ensmean(:,mos_SIE,:),2));
+cmipmean =  nanmean(cmipplot,1);
+cmipvar = stdcorr(cmipplot,1,num_CMIP_models);
 
 clear hl
 
@@ -52,7 +54,9 @@ end
 
 hold on
 
-hl(end+1) = plot(CMIP.plotyrs,nanmean(cmipplot,1),'--k');
+[hl(end+1),~] = boundedline(CMIP.plotyrs,cmipmean,cmipvar,'.','cmap',clabs(7,:));
+
+% hl(end+1) = plot(CMIP.plotyrs,nanmean(cmipplot,1),'.k');
 
 symb = {'-k','--k','-xk'};
 
@@ -81,10 +85,12 @@ ylabel('10$^6$ km$^2$','interpreter','latex')
 
 %%
 Ax{2} = subplot(322);
+cla
 
 cmipplot = squeeze(mean(CMIP.MIZA_F_ensmean(:,mos_SIE,:),2));
 
 num_CMIP_models = sum(~isnan(cmipplot(:,165)));
+
 cmipmean =  nanmean(cmipplot,1);
 cmipvar = stdcorr(cmipplot,1,num_CMIP_models);
 
@@ -98,11 +104,11 @@ for i = 1:5
     
 end
 
-hold on
 %%
-hl(end+1) = plot(CMIP.plotyrs,nanmean(cmipplot,1),'--k');
+hold on
+% hl(end+1) = plot(CMIP.plotyrs,nanmean(cmipplot,1),'.k');
 
-% [hl(end+1),~] = boundedline(CMIP.plotyrs,cmipmean,cmipvar,'--k');
+[hl(end+1),~] = boundedline(CMIP.plotyrs,cmipmean,cmipvar,'.','cmap',clabs(7,:));
 
 symb = {'-k','--k','-xk'};
 
@@ -131,6 +137,7 @@ q = strrep(CLIVAR.names,'_','-');
 ylabel('\%','interpreter','latex')
 
 %%
+
 Ax{3} = subplot(323);
 
 % gvec = {CLIVAR.namevec(:)}; % For labeling box plot
@@ -158,7 +165,10 @@ for i = 1:length(scath)
     
 end
 
-set(scath(end),'MarkerFaceColor','none','Marker','o','MarkerFaceColor','k','MarkerEdgeColor','k','MarkerSize',3,'linewidth',1)
+
+set(scath(end), 'MarkerFaceColor',clabs(7,:),'Marker','o','MarkerEdgeColor','none','MarkerSize',5)
+
+% set(scath(end),'MarkerFaceColor','none','Marker','o','MarkerFaceColor','k','MarkerEdgeColor','k','MarkerSize',3,'linewidth',1)
 
 
 hold on
@@ -171,6 +181,7 @@ title('Sep. 1979-2014','interpreter','latex');
 xlabel('');
 % xlabel('(\%/yr)','interpreter','latex');
 grid on; box on;
+ylim([min(get(gca,'ylim')) .045]); 
 
 %%
 
@@ -197,7 +208,7 @@ for i = 1:length(scath)
     
 end
 
-set(scath(end),'MarkerFaceColor','none','Marker','o','MarkerFaceColor','k','MarkerEdgeColor','k','MarkerSize',3,'linewidth',1)
+set(scath(end), 'MarkerFaceColor',clabs(7,:),'Marker','o','MarkerEdgeColor','none','MarkerSize',5)
 
 hold on
 
@@ -296,6 +307,7 @@ set(gca,'yaxislocation','right')
 
 delete(findall(gcf,'Tag','legtag'))
 
+letter = {'(a)','(b)','(c)','(d)','(e)','(f)','(g)','(e)','(c)'};
 
 for i = 1:length(Ax)
     set(Ax{i},'fontname','helvetica','fontsize',8,'xminortick','on','yminortick','on','TickLabelInterpreter','latex')
